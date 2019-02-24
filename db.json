@@ -1,0 +1,130 @@
+{
+  "boards": [
+    {
+      "id": 1,
+      "title": "Test Board",
+      "author": "sustained",
+      "counts": {
+        "lists": 3,
+        "cards": 3
+      }
+    }
+  ],
+
+  "lists": [
+    {
+      "id": 1,
+      "boardId": 1,
+      "title": "List One",
+      "author": "sustained"
+    },
+    {
+      "id": 2,
+      "boardId": 1,
+      "title": "List Två",
+      "author": "sustained"
+    },
+    {
+      "id": 3,
+      "boardId": 1,
+      "title": "List Zwei",
+      "author": "sustained"
+    },
+    {
+      "id": 4,
+      "boardId": 1,
+      "title": "List Four",
+      "author": "sustained"
+    },
+    {
+      "id": 5,
+      "boardId": 1,
+      "title": "List Fem",
+      "author": "sustained"
+    },
+    {
+      "id": 6,
+      "boardId": 1,
+      "title": "List Sex",
+      "author": "sustained"
+    },
+    {
+      "id": 7,
+      "boardId": 1,
+      "title": "List Seven",
+      "author": "sustained"
+    },
+    {
+      "id": 8,
+      "boardId": 1,
+      "title": "List Åtta",
+      "author": "sustained"
+    },
+    {
+      "id": 9,
+      "boardId": 1,
+      "title": "List Nine",
+      "author": "sustained"
+    },
+    {
+      "id": 10,
+      "boardId": 1,
+      "title": "Blah",
+      "author": "sustained"
+    }
+  ],
+
+  "cards": [
+    {
+      "id": 1,
+      "listId": 1,
+      "boardId": 1,
+      "author": "sustained",
+      "createdAt": "1550948066565"
+    },
+    {
+      "id": 2,
+      "listId": 1,
+      "boardId": 1,
+      "author": "sustained",
+      "createdAt": "1550935066565"
+    },
+    {
+      "id": 3,
+      "listId": 2,
+      "boardId": 1,
+      "author": "sustained",
+      "createdAt": "1550642064565"
+    }
+  ],
+
+  "fields": [
+    {
+      "id": 1,
+      "cardId": 1,
+      "boardId": 1,
+      "fields": ["foo"]
+    },
+    {
+      "id": 2,
+      "cardId": 2,
+      "boardId": 1,
+      "fields": ["bar"]
+    }
+  ],
+
+  "votes": [
+    {
+      "id": 1,
+      "cardId": 1,
+      "boardId": 1,
+      "vote": 1
+    },
+    {
+      "id": 1,
+      "cardId": 2,
+      "boardId": 1,
+      "vote": 1
+    }
+  ]
+}
