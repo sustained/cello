@@ -15,12 +15,15 @@ export default {
 
 <style>
 html,
-body,
-div#app {
+body {
   height: 100%;
   width: max-content;
-  font-family: sans-serif;
   overflow-x: hidden;
+  overflow-y: hidden;
+}
+div#app {
+  height: 100%;
+  font-family: sans-serif;
 }
 
 * {
