@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
+    "api": "node_modules/.bin/json-server --watch db.json",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint"
   },
@@ -12,6 +13,7 @@
     "lodash.throttle": "^4.1.1",
     "vue": "^2.5.22",
     "vue-router": "^3.0.1",
+    "vuedraggable": "^2.18.0",
     "vuex": "^3.0.1"
   },
   "devDependencies": {
