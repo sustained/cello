@@ -34,34 +34,7 @@ export default {
       currentGroup: 0,
       currentList: 0,
 
-      groups: [
-        {
-          lists: [
-            { id: 1, title: "foo", cards: [{ id: 1, title: "gsge" }] },
-            { id: 2, title: "bar", cards: [{ id: 2, title: "ajge" }] },
-            { id: 3, title: "blah", cards: [{ id: 3, title: "oejg" }] },
-            { id: 4, title: "weee", cards: [{ id: 4, title: "oejg" }] },
-            { id: 5, title: "doode", cards: [{ id: 5, title: "oejg" }] },
-            { id: 6, title: "dumda", cards: [{ id: 6, title: "oejg" }] },
-            { id: 7, title: "diddely", cards: [{ id: 7, title: "oejg" }] },
-            { id: 8, title: "bloooo", cards: [{ id: 8, title: "oejg" }] }
-          ]
-        },
-        {
-          lists: [
-            { id: 11, title: "bazfoo", cards: [{ id: 11, title: "meut" }] },
-            { id: 12, title: "foobar", cards: [{ id: 12, title: "wjgi" }] },
-            { id: 13, title: "bazbar", cards: [{ id: 13, title: "pegj" }] },
-            { id: 14, title: "bazbar", cards: [{ id: 13, title: "pegj" }] },
-            { id: 15, title: "bazbar", cards: [{ id: 13, title: "pegj" }] },
-            { id: 16, title: "bazbar", cards: [{ id: 13, title: "pegj" }] },
-            { id: 17, title: "bazbar", cards: [{ id: 13, title: "pegj" }] },
-            { id: 18, title: "bazbar", cards: [{ id: 13, title: "pegj" }] },
-            { id: 19, title: "bazbar", cards: [{ id: 13, title: "pegj" }] },
-            { id: 20, title: "bazbar", cards: [{ id: 13, title: "pegj" }] }
-          ]
-        }
-      ]
+      groups: []
     };
   },
 
@@ -74,19 +47,32 @@ export default {
   async mounted() {
     window.scrollTo(0, 0);
 
-    /*
-    // NOTE: Quickly generate lots of data to stress-test.
+    const randBetween = (minimum, maximum) =>
+      Math.max(minimum, Math.floor(Math.random() * maximum));
+
+    const randString = () =>
+      Math.random()
+        .toString(36)
+        .slice(2);
+
     let currListId = 0;
     let currCardId = 0;
 
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < 5; i++) {
       const group = { lists: [] };
 
-      for (let j = 0, jm = Math.floor(Math.random() * 30); j < jm; j++) {
-        const list = { id: currListId++, title: Math.random().toString(36).slice(2), cards: [] };
+      for (let j = 0, jm = randBetween(7, 15); j < jm; j++) {
+        const list = {
+          id: currListId++,
+          title: randString(),
+          cards: []
+        };
 
-        for (let k = 0, km = Math.floor(Math.random() * 30); k < km; k++) {
-          const card = { id: currCardId++, title: Math.random().toString(36).slice(2) };
+        for (let k = 0, km = randBetween(5, 10); k < km; k++) {
+          const card = {
+            id: currCardId++,
+            title: randString()
+          };
 
           list.cards.push(card);
         }
@@ -94,9 +80,9 @@ export default {
         group.lists.push(list);
       }
 
+      console.log("setting group", group);
       Vue.set(this.groups, i, group);
     }
-    */
 
     console.info("registering event listeners");
 
