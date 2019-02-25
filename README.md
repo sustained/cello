@@ -10,7 +10,7 @@ npm install
 
 ```
 npm run serve
-npm run node_modules/.bin/json-server db.json
+npm run api
 ```
 
 ### Compiles and minifies for production
