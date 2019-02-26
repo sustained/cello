@@ -7,36 +7,44 @@ import cello from "@/services/CelloService";
 
 export default new Vuex.Store({
   state: {
+    // The indexes for the currently selected list and group.
     currentList: 0,
     currentGroup: 0,
+
+    // Keeps track of list counts for groups, for navigation purposes.
     groupListCounts: [],
+
+    // Blocks navigation when navigation is in progress.
     isNavigating: false,
+
+    // Passed along to scrollIntoView.
     scrollBehaviour: "smooth", // smooth | auto
+
+    // True for the duration of top-to-bottom or vice versa navigation.
     wrappedToTop: false,
     wrappedToBottom: false,
 
+    // One of unloaded | loading | loaded | errored and the error, if present.
     loadingState: "unloaded",
     errorMessage: null,
 
+    // All of the boards (in unloaded state) + (for current board): cards, lists, groups,
+    // fields, votes, checklists, linked cards, attachments and whatever else we either
+    // currently are or will at some point be storing.
+    boards: [],
     cards: [],
     lists: [],
-    groups: [],
+    groups: []
     // fields: [],
-    // votes: [],
-
-    boards: [],
-    board: {
-      lists: [],
-      cards: []
-    }
+    // votes: []
   },
 
   mutations: {
     SET_LOADING_STATE: (state, value) => (state.loadingState = value),
+
     SET_ERROR_MESSAGE: (state, value) => (state.errorMessage = value),
     SET_NAVIGATING: (state, value) => (state.isNavigating = value),
 
-    SET_BOARD: (state, board) => (state.board = board),
     SET_BOARDS: (state, value) => (state.boards = value),
 
     SET_CARDS: (state, value) => (state.cards = value),
@@ -70,7 +78,7 @@ export default new Vuex.Store({
       else commit("SET_CURRENT_LIST", state.currentList + 1);
     },
 
-    navigateUp({ commit, getters, state }) {
+    async navigateUp({ commit, dispatch, state }) {
       if (state.isNavigating) return;
       commit("SET_NAVIGATING", true);
 
@@ -83,12 +91,10 @@ export default new Vuex.Store({
         commit("SET_CURRENT_GROUP", state.currentGroup - 1);
       }
 
-      // Select final list if we were scrolled further right in the previous group than this group allows for.
-      if (state.currentList > getters.listCountsForGroup(state.currentGroup) - 1)
-        commit("SET_CURRENT_LIST", getters.listCountsForGroup(state.currentGroup) - 1);
+      await dispatch("moveToEndOfListIfNeeded");
     },
 
-    navigateDown({ commit, getters, state }) {
+    async navigateDown({ commit, dispatch, state }) {
       if (state.isNavigating) return;
       commit("SET_NAVIGATING", true);
 
@@ -101,7 +107,11 @@ export default new Vuex.Store({
         commit("SET_CURRENT_GROUP", state.currentGroup + 1);
       }
 
-      // Select final list if we were scrolled further right in the previous group than this group allows for.
+      await dispatch("moveToEndOfListIfNeeded");
+    },
+
+    // Check if prev group had a farther-to-the right list selected.
+    moveToEndOfListIfNeeded({ commit, getters, state }) {
       if (state.currentList > getters.listCountsForGroup(state.currentGroup) - 1)
         commit("SET_CURRENT_LIST", getters.listCountsForGroup(state.currentGroup) - 1);
     },
