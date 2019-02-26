@@ -34,7 +34,9 @@ export default {
       currentGroup: 0,
       currentList: 0,
 
-      groups: []
+      groups: [],
+
+      navigating: false
     };
   },
 
@@ -85,9 +87,7 @@ export default {
     }
 
     console.info("registering event listeners");
-
     document.addEventListener("keydown", this.handleKeyDown);
-
     document.addEventListener("mousewheel", this.handleMouseWheel, {
       passive: true
     });
@@ -156,7 +156,7 @@ export default {
       )
         this.currentList = this.$refs["lists-" + this.currentGroup].length - 1;
 
-      this.scrollToCurrentList(didWrap);
+      this.scrollToCurrentList(didWrap, false);
     },
 
     scrollUp() {
@@ -175,7 +175,7 @@ export default {
       )
         this.currentList = this.$refs["lists-" + this.currentGroup].length - 1;
 
-      this.scrollToCurrentList(didWrap);
+      this.scrollToCurrentList(didWrap, false);
     },
 
     /* IDEA: We could intelligently handle the disableSmoothBehaviour thing.
@@ -187,7 +187,7 @@ export default {
       We can probably make it so that if there are too many groups, then it will just 
       intelligently set behaviour to "auto".
     */
-    scrollToCurrentList(disableSmoothBehaviour) {
+    scrollToCurrentList(disableSmoothBehaviour, disableObserver = true) {
       const lists = this.$refs["lists-" + this.currentGroup];
 
       if (!lists) return console.warn("no refs for group " + this.currentGroup);
@@ -203,13 +203,42 @@ export default {
 
       const element = component.$el;
 
+      if (!disableObserver) this.createObserver(element);
+
+      console.log("scrolling to element");
       element.scrollIntoView({
         behavior: disableSmoothBehaviour ? "auto" : "smooth", // TODO: Let user choose auto/smooth.
         inline: "center"
       });
     },
 
+    createObserver(element) {
+      this.navigating = true;
+
+      console.log("creating observer");
+      let observer = new IntersectionObserver(
+        entry => {
+          let ratio = entry[0].intersectionRatio;
+
+          // HACK: Workaround potential Chrome bug (or IntersectionObserver quirk).
+          if (ratio >= 1.0) {
+            observer.unobserve(element);
+            this.navigating = false;
+          }
+        },
+        {
+          root: document.getElementById("div#board"),
+          threshold: [1.0]
+        }
+      );
+
+      console.log("observing element", element);
+      observer.observe(element);
+    },
+
     handleKeyDown(event) {
+      if (this.navigating) return;
+
       switch (event.keyCode) {
         case 65:
           this.scrollLeft();
