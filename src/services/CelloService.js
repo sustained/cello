@@ -18,8 +18,6 @@ export default {
 
     if (embed.length) url += "?" + embed.map(i => `_embed=${i}`).join("&");
 
-    console.log(url);
-
     return api.get(url);
   },
 
@@ -48,5 +46,9 @@ export default {
 
   createBoard(params) {
     return api.post(`/boards`, params);
+  },
+
+  updateList(id, params) {
+    return api.patch(`/lists/${id}`, params);
   }
 };
