@@ -44,5 +44,9 @@ export default {
     if (params.listId) return api.get(`/cards?listId=${params.listId}`);
 
     return api.get(`/cards`);
+  },
+
+  createBoard(params) {
+    return api.post(`/boards`, params);
   }
 };
