@@ -128,20 +128,24 @@ export default {
 
     handleKeyDown(event) {
       switch (event.keyCode) {
-        case 65:
-          this.$store.dispatch("navigateLeft");
-          break;
-
-        case 68:
-          this.$store.dispatch("navigateRight");
-          break;
-
-        case 87:
+        case 87: // W
           this.$store.dispatch("navigateUp");
           break;
 
-        case 83:
+        case 65: // A
+          this.$store.dispatch("navigateLeft");
+          break;
+
+        case 83: // S
           this.$store.dispatch("navigateDown");
+          break;
+
+        case 68: // D
+          this.$store.dispatch("navigateRight");
+          break;
+
+        case 69: // E
+          // this.$store.dispatch("editListTitle");
           break;
       }
     }
