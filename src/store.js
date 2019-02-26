@@ -36,6 +36,8 @@ export default new Vuex.Store({
       // One of 100, 50 or 25 is probably best (vh units).
       gridHeight: 50,
 
+      boardPadding: [10, 10],
+
       // One of double | single | none.
       clickToSelectList: "double",
 
@@ -70,9 +72,11 @@ export default new Vuex.Store({
     boards: [],
     cards: [],
     lists: [],
-    groups: []
+    groups: [],
     // fields: [],
     // votes: []
+
+    disableNavigation: false
   },
 
   mutations: {
