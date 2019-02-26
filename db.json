@@ -15,62 +15,90 @@
     {
       "id": 1,
       "boardId": 1,
+      "groupId": 1,
       "title": "List One",
       "author": "sustained"
     },
     {
       "id": 2,
       "boardId": 1,
+      "groupId": 1,
       "title": "List Två",
       "author": "sustained"
     },
     {
       "id": 3,
       "boardId": 1,
+      "groupId": 2,
       "title": "List Zwei",
       "author": "sustained"
     },
     {
       "id": 4,
       "boardId": 1,
+      "groupId": 2,
       "title": "List Four",
       "author": "sustained"
     },
     {
       "id": 5,
       "boardId": 1,
+      "groupId": 2,
       "title": "List Fem",
       "author": "sustained"
     },
     {
       "id": 6,
       "boardId": 1,
+      "groupId": 3,
       "title": "List Sex",
       "author": "sustained"
     },
     {
       "id": 7,
       "boardId": 1,
+      "groupId": 3,
       "title": "List Seven",
       "author": "sustained"
     },
     {
       "id": 8,
       "boardId": 1,
+      "groupId": 3,
       "title": "List Åtta",
       "author": "sustained"
     },
     {
       "id": 9,
       "boardId": 1,
+      "groupId": 3,
       "title": "List Nine",
       "author": "sustained"
     },
     {
       "id": 10,
       "boardId": 1,
+      "groupId": 3,
       "title": "Blah",
       "author": "sustained"
+    }
+  ],
+
+  "groups": [
+    {
+      "id": 1,
+      "boardId": 1,
+      "title": "Group One"
+    },
+    {
+      "id": 1,
+      "boardId": 1,
+      "title": "Group One"
+    },
+    {
+      "id": 1,
+      "boardId": 1,
+      "title": "Group One"
     }
   ],
 
