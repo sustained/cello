@@ -147,6 +147,14 @@ export default {
         case 69: // E
           // this.$store.dispatch("editListTitle");
           break;
+
+        case 33: // Page Up
+          this.$store.dispatch("navigateLeft", true);
+          break;
+
+        case 34: // Page Down
+          this.$store.dispatch("navigateRight", true);
+          break;
       }
     }
   }

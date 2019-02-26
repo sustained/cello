@@ -115,17 +115,21 @@ export default new Vuex.Store({
   },
 
   actions: {
-    navigateLeft({ commit, state }) {
+    navigateLeft({ commit, state }, toEnd = false) {
       if (state.isNavigating || state.disableNavigation) return;
       commit("SET_NAVIGATING", true);
+
+      if (toEnd) return commit("SET_CURRENT_LIST", 0);
 
       if (state.currentList - 1 < 0) commit("SET_CURRENT_LIST", state.groupListCounts[state.currentGroup] - 1);
       else commit("SET_CURRENT_LIST", state.currentList - 1);
     },
 
-    navigateRight({ commit, state }) {
+    navigateRight({ commit, state }, toEnd = false) {
       if (state.isNavigating || state.disableNavigation) return;
       commit("SET_NAVIGATING", true);
+
+      if (toEnd) return commit("SET_CURRENT_LIST", state.groupListCounts[state.currentGroup] - 1);
 
       if (state.currentList + 1 > state.groupListCounts[state.currentGroup] - 1) commit("SET_CURRENT_LIST", 0);
       else commit("SET_CURRENT_LIST", state.currentList + 1);
