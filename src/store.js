@@ -12,7 +12,10 @@ export default new Vuex.Store({
       scrollBehaviour: "smooth",
 
       // Override ABOVE behaviour when wrapping (vertical, horizontal), only used if scrollBehaviour is scroll.
-      wrappingBehaviour: ["auto", "auto"],
+      wrappingBehaviour: {
+        vertical: "auto",
+        horizontal: "auto"
+      },
 
       // Display a thin bar, consisting of the label colour, on the sides of cards.
       primaryLabelBars: true,
@@ -28,7 +31,19 @@ export default new Vuex.Store({
       labelsExpanded: true,
 
       // Toggle the ABOVE, when labels are clicked.
-      expandLabelsOnClick: true
+      expandLabelsOnClick: true,
+
+      // One of 100, 50 or 25 is probably best (vh units).
+      gridHeight: 50,
+
+      // One of double | single | none.
+      clickToSelectList: "double",
+
+      // Hide bottom buttons (add card etc.)
+      hideBottomButtons: true,
+
+      // ...
+      shortcuts: []
     },
 
     // The indexes for the currently selected list and group.
@@ -101,12 +116,11 @@ export default new Vuex.Store({
 
     async navigateUp({ commit, dispatch, state }) {
       if (state.isNavigating) return;
-      commit("SET_NAVIGATING", true);
 
       // Top wraps back around to bottom.
       if (state.currentGroup - 1 < 0) {
         commit("SET_DID_WRAP_TO_BOTTOM", true);
-        // setTimeout(() => commit("SET_DID_WRAP_TO_BOTTOM", false), 500);
+        commit("SET_NAVIGATING", true);
         commit("SET_CURRENT_GROUP", state.groups.length - 1);
       } else {
         commit("SET_CURRENT_GROUP", state.currentGroup - 1);
@@ -117,14 +131,14 @@ export default new Vuex.Store({
 
     async navigateDown({ commit, dispatch, state }) {
       if (state.isNavigating) return;
-      commit("SET_NAVIGATING", true);
 
       // Bottom wraps back around to top.
       if (state.currentGroup + 1 > state.groups.length - 1) {
         commit("SET_DID_WRAP_TO_TOP", true);
-        // setTimeout(() => commit("SET_DID_WRAP_TO_TOP", false), 500);
+        commit("SET_NAVIGATING", true);
         commit("SET_CURRENT_GROUP", 0);
       } else {
+        commit("SET_NAVIGATING", true);
         commit("SET_CURRENT_GROUP", state.currentGroup + 1);
       }
 
@@ -182,6 +196,14 @@ export default new Vuex.Store({
 
     listCountsForGroup(state) {
       return groupId => state.groupListCounts[groupId];
+    },
+
+    isLastGroupActive(state) {
+      return state.currentGroup + 1 > state.groups.length - 1;
+    },
+
+    boardIsEmpty(state) {
+      return state.loadingState === "loaded" && state.groupListCounts.length === 0;
     }
   }
 });
