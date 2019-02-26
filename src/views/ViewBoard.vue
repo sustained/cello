@@ -98,7 +98,12 @@ export default {
 
     styleList() {
       return {
-        height: this.options.gridHeight + "vh"
+        // height: this.options.gridHeight + "vh",
+        padding:
+          this.options.boardPadding[0] +
+          "vh " +
+          this.options.boardPadding[1] +
+          "vh"
       };
     },
 
@@ -146,7 +151,7 @@ export default {
 
 <style>
 div#board {
-  height: 100vh;
+  /* height: 100vh; */
 }
 
 div#board {
