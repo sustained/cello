@@ -19,6 +19,7 @@ div.card {
   background-color: rgb(0, 255, 0, 0.3);
   padding: 10px;
   margin: 10px;
+  border-radius: 5px;
 }
 
 div.card pre {
