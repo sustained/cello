@@ -49,6 +49,13 @@ export default {
     return {};
   },
 
+  watch: {
+    // HACK: Slightly hacky but works for now (when there is no boardPadding heh).
+    loadingState(state) {
+      if (state === "loaded") setTimeout(() => window.scrollTo(0, 0), 100);
+    }
+  },
+
   beforeDestroy() {
     // console.info("cleaning up event listeners");
     document.removeEventListener("keydown", this.handleKeyDown);
@@ -56,15 +63,7 @@ export default {
   },
 
   async mounted() {
-    // HACK: Not really sure what else to do, we need to reset the scroll position since at least Chrome
-    // remembers the previous scroll position which looks kind of odd if you refresh the page.
-    if (document.readyState === "loading")
-      document.addEventListener("DOMContentLoaded", () => {
-        setTimeout(() => window.scrollTo(0, 0), 250);
-      });
-    else window.scrollTo(0, 0);
-
-    console.info("registering event listeners");
+    // console.info("registering event listeners");
     document.addEventListener("keydown", this.handleKeyDown);
     document.addEventListener("mousewheel", this.handleMouseWheel, {
       passive: true
