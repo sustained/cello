@@ -1,29 +1,54 @@
 <template>
-  <div
+  <article
     ref="list"
     :class="['list', {selected}]"
     @click="selectThisList('single')"
     @dblclick="selectThisList('double')"
   >
-    <div class="list-wrapper">
-      <p>{{ list.title }}</p>
+    <header>
+      <list-title :title="list.title" :parent="list.id" @editing-title="onEditingTitle"/>
 
+      <!-- <nav>
+        <ul>
+          <li>
+            <a href="#" @click="$emit('edit', list.id)">edit</a>
+          </li>
+        </ul>
+      </nav>-->
+    </header>
+
+    <main>
       <slot>
-        <p style="margin: 20px 10px;">No cards!</p>
+        <p>No cards!</p>
       </slot>
-    </div>
+    </main>
 
-    <div class="list-add-card" v-show="!options.hideBottomButtons">
-      <router-link to="card/add" append>Add Card</router-link>
-    </div>
-  </div>
+    <footer v-show=" ! options.hideBottomButtons">
+      <ul>
+        <li>
+          <router-link to="card/add" append>Add Card</router-link>
+        </li>
+      </ul>
+    </footer>
+  </article>
 </template>
 
 <script>
 import { mapState, mapGetters } from "vuex";
 
+import ListTitle from "./list/ListTitle.vue";
+
 export default {
   props: ["list", "row", "selected"],
+
+  components: { ListTitle },
+
+  data() {
+    return {
+      isEditingTitle: false,
+      editedTitle: ""
+    };
+  },
 
   watch: {
     selected(selected) {
@@ -45,7 +70,15 @@ export default {
     ...mapGetters(["listsForGroup"])
   },
 
+  mounted() {
+    this.editedTitle = this.list.title;
+  },
+
   methods: {
+    editTitle(editing) {
+      this.isEditingTitle = editing;
+    },
+
     /* IDEA: We could intelligently handle the disableSmoothBehaviour thing.
       
       The scrolling with the smooth behaviour enabled with large numbers of groups 
@@ -68,7 +101,11 @@ export default {
       else behaviour = this.options.scrollBehaviour;
 
       // console.log("scrolling to element");
-      list.scrollIntoView({ behavior: behaviour, inline: "center" });
+      list.scrollIntoView({
+        behavior: behaviour,
+        inline: "center",
+        block: "center"
+      });
     },
 
     createObserver(element) {
@@ -99,11 +136,15 @@ export default {
       observer.observe(element);
     },
 
-    selectThisList(click) {
+    selectThisList(click, mode) {
       const option = this.options.clickToSelectList;
 
       if (option === "none" || !(click === option)) return;
 
+      this.select();
+    },
+
+    select() {
       const lists = this.listsForGroup(this.list.groupId);
 
       if (this.row !== this.currentGroup)
@@ -113,44 +154,67 @@ export default {
         "SET_CURRENT_LIST",
         lists.findIndex(list => list.id === this.list.id)
       );
+    },
+
+    onEditingTitle(editing) {
+      if (editing) {
+        this.select();
+        this.$nextTick(() => {
+          this.bringIntoView();
+        });
+      }
     }
   }
 };
 </script>
 
 <style scoped>
-div.list-wrapper {
-  overflow-x: hidden;
-  overflow-y: auto;
-
-  flex-grow: 1;
-}
-
-div.list-add-card {
-  padding: 0.5em;
-}
-
-div.list {
+article {
   width: 222px;
 
   display: flex;
   flex-direction: column;
 
   background-color: rgba(255, 0, 0, 0.3);
-}
 
-div.list {
+  border-radius: 4px;
+
   border: 2px solid transparent;
   margin-right: 0.5em;
 }
-div.list:last-child {
-  margin-right: 0;
+article.selected {
+  border: 2px solid rgba(0, 0, 0, 0.4);
 }
-div.list.selected {
-  border: 2px solid black;
+article:last-child {
+  margin-right: 0;
 }
 
 p {
   margin: 10px;
+}
+
+header {
+  display: flex;
+  width: 100%;
+  padding: 4px;
+  background-color: rgba(255, 255, 0, 0.5);
+}
+header div.edit-title {
+  flex-grow: 1;
+}
+
+header nav ul {
+  background-color: rgba(255, 0, 0, 0.5);
+  list-style-type: none;
+}
+
+main {
+  flex-grow: 1;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+footer {
+  padding: 0.5em;
 }
 </style>
