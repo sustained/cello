@@ -1,5 +1,10 @@
 <template>
-  <div ref="list" :class="['list', {selected}]">
+  <div
+    ref="list"
+    :class="['list', {selected}]"
+    @click="selectThisList('single')"
+    @dblclick="selectThisList('double')"
+  >
     <div class="list-wrapper">
       <p>{{ list.title }}</p>
 
@@ -8,23 +13,17 @@
       </slot>
     </div>
 
-    <div class="list-add-card">
+    <div class="list-add-card" v-show="!options.hideBottomButtons">
       <router-link to="card/add" append>Add Card</router-link>
     </div>
   </div>
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState, mapGetters } from "vuex";
 
 export default {
-  props: ["list", "selected"],
-
-  data() {
-    return {
-      refsSet: false
-    };
-  },
+  props: ["list", "row", "selected"],
 
   watch: {
     selected(selected) {
@@ -35,7 +34,15 @@ export default {
   },
 
   computed: {
-    ...mapState(["wrappedToTop", "wrappedToBottom"])
+    ...mapState([
+      "wrappedToTop",
+      "wrappedToBottom",
+      "currentGroup",
+      "options",
+      "lists"
+    ]),
+
+    ...mapGetters(["listsForGroup"])
   },
 
   methods: {
@@ -48,25 +55,20 @@ export default {
       We can probably make it so that if there are too many groups, then it will just 
       intelligently set behaviour to "auto".
     */
-    bringIntoView(disableSmoothBehaviour, disableObserver = false) {
+    bringIntoView(disableObserver = false) {
       const list = this.$refs["list"];
 
       if (!list) return console.warn("no ref for list " + this.list.id);
 
       if (!disableObserver) this.createObserver(list);
 
+      let behaviour;
       if (this.wrappedToTop || this.wrappedToBottom)
-        disableSmoothBehaviour = true;
+        behaviour = this.options.wrappingBehaviour.vertical;
+      else behaviour = this.options.scrollBehaviour;
 
       // console.log("scrolling to element");
-      list.scrollIntoView({
-        behavior: disableSmoothBehaviour ? "auto" : "smooth", // TODO: Let user choose auto/smooth.
-        inline: "center"
-      });
-
-      // setTimeout(() => {
-      //   this.$store.commit("SET_NAVIGATING", false);
-      // }, 1000);
+      list.scrollIntoView({ behavior: behaviour, inline: "center" });
     },
 
     createObserver(element) {
@@ -79,8 +81,12 @@ export default {
           if (ratio >= 1.0) {
             observer.unobserve(element);
             this.$store.commit("SET_NAVIGATING", false);
-            this.$store.commit("SET_DID_WRAP_TO_TOP", false);
-            this.$store.commit("SET_DID_WRAP_TO_BOTTOM", false);
+
+            if (this.$store.state.wrappedToTop)
+              this.$store.commit("SET_DID_WRAP_TO_TOP", false);
+
+            if (this.$store.state.wrappedToBottom)
+              this.$store.commit("SET_DID_WRAP_TO_BOTTOM", false);
           }
         },
         {
@@ -91,6 +97,22 @@ export default {
 
       // console.log("observing element", element);
       observer.observe(element);
+    },
+
+    selectThisList(click) {
+      const option = this.options.clickToSelectList;
+
+      if (option === "none" || !(click === option)) return;
+
+      const lists = this.listsForGroup(this.list.groupId);
+
+      if (this.row !== this.currentGroup)
+        this.$store.commit("SET_CURRENT_GROUP", this.row);
+
+      this.$store.commit(
+        "SET_CURRENT_LIST",
+        lists.findIndex(list => list.id === this.list.id)
+      );
     }
   }
 };
