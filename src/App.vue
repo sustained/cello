@@ -6,7 +6,8 @@
 
 <script>
 export default {
-  name: "App",
+  name: "Cello",
+
   data() {
     return {};
   }
