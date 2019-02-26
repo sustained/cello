@@ -197,6 +197,19 @@ export default new Vuex.Store({
           commit("SET_LOADING_STATE", "errored");
           commit("SET_ERROR_MESSAGE", error.message);
         });
+    },
+
+    updateList({ commit, state }, payload) {
+      // return console.log("updating list with id", payload.id, "and payload", payload.data);
+
+      cello
+        .updateList(payload.id, payload.data)
+        .then(commit("UPDATE_LIST", payload))
+        .catch(error => {
+          console.log("failed to update list", payload.id, payload.data, error);
+          // commit("SET_RUNNING_STATE", "errored")
+          // commit("");
+        });
     }
   },
 
