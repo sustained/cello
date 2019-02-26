@@ -14,7 +14,9 @@ export default new Vuex.Store({
     scrollBehaviour: "smooth", // smooth | auto
     wrappedToTop: false,
     wrappedToBottom: false,
+
     loadingState: "unloaded",
+    errorMessage: null,
 
     cards: [],
     lists: [],
@@ -31,6 +33,7 @@ export default new Vuex.Store({
 
   mutations: {
     SET_LOADING_STATE: (state, value) => (state.loadingState = value),
+    SET_ERROR_MESSAGE: (state, value) => (state.errorMessage = value),
     SET_NAVIGATING: (state, value) => (state.isNavigating = value),
 
     SET_BOARD: (state, board) => (state.board = board),
@@ -112,20 +115,25 @@ export default new Vuex.Store({
     loadBoard({ commit, state }, id) {
       commit("SET_LOADING_STATE", "loading");
 
-      return cello.getBoard(id, ["cards", "lists", "fields", "votes", "groups"]).then(response => {
-        commit("SET_CARDS", response.data.cards);
-        commit("SET_LISTS", response.data.lists);
-        commit("SET_GROUPS", response.data.groups);
+      return cello
+        .getBoard(id, ["cards", "lists", "fields", "votes", "groups"])
+        .then(response => {
+          commit("SET_CARDS", response.data.cards);
+          commit("SET_LISTS", response.data.lists);
+          commit("SET_GROUPS", response.data.groups);
 
-        const groupListCounts = [];
-        for (let i = 0; i < state.groups.length; i++) {
-          groupListCounts[i] = state.lists.filter(list => list.groupId === state.groups[i].id).length;
-        }
+          const groupListCounts = [];
+          for (let i = 0; i < state.groups.length; i++) {
+            groupListCounts[i] = state.lists.filter(list => list.groupId === state.groups[i].id).length;
+          }
 
-        commit("SET_GROUP_LIST_COUNTS", groupListCounts);
-
-        commit("SET_LOADING_STATE", "loaded");
-      });
+          commit("SET_GROUP_LIST_COUNTS", groupListCounts);
+          commit("SET_LOADING_STATE", "loaded");
+        })
+        .catch(error => {
+          commit("SET_LOADING_STATE", "errored");
+          commit("SET_ERROR_MESSAGE", error.message);
+        });
     }
   },
 
