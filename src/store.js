@@ -77,7 +77,7 @@ export default new Vuex.Store({
       // Top wraps back around to bottom.
       if (state.currentGroup - 1 < 0) {
         commit("SET_DID_WRAP_TO_BOTTOM", true);
-        setTimeout(() => commit("SET_DID_WRAP_TO_BOTTOM", false), 500);
+        // setTimeout(() => commit("SET_DID_WRAP_TO_BOTTOM", false), 500);
         commit("SET_CURRENT_GROUP", state.groups.length - 1);
       } else {
         commit("SET_CURRENT_GROUP", state.currentGroup - 1);
@@ -95,7 +95,7 @@ export default new Vuex.Store({
       // Bottom wraps back around to top.
       if (state.currentGroup + 1 > state.groups.length - 1) {
         commit("SET_DID_WRAP_TO_TOP", true);
-        setTimeout(() => commit("SET_DID_WRAP_TO_TOP", false), 500);
+        // setTimeout(() => commit("SET_DID_WRAP_TO_TOP", false), 500);
         commit("SET_CURRENT_GROUP", 0);
       } else {
         commit("SET_CURRENT_GROUP", state.currentGroup + 1);

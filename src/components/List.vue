@@ -15,6 +15,8 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
+
 export default {
   props: ["list", "selected"],
 
@@ -32,7 +34,9 @@ export default {
     }
   },
 
-  mounted() {},
+  computed: {
+    ...mapState(["wrappedToTop", "wrappedToBottom"])
+  },
 
   methods: {
     /* IDEA: We could intelligently handle the disableSmoothBehaviour thing.
@@ -50,6 +54,9 @@ export default {
       if (!list) return console.warn("no ref for list " + this.list.id);
 
       if (!disableObserver) this.createObserver(list);
+
+      if (this.wrappedToTop || this.wrappedToBottom)
+        disableSmoothBehaviour = true;
 
       // console.log("scrolling to element");
       list.scrollIntoView({
@@ -72,6 +79,8 @@ export default {
           if (ratio >= 1.0) {
             observer.unobserve(element);
             this.$store.commit("SET_NAVIGATING", false);
+            this.$store.commit("SET_DID_WRAP_TO_TOP", false);
+            this.$store.commit("SET_DID_WRAP_TO_BOTTOM", false);
           }
         },
         {
