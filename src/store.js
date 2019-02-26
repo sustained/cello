@@ -93,17 +93,30 @@ export default new Vuex.Store({
     // SET_FIELDS: (state, value) => (state.fields = value),
     // SET_VOTES: (state, value) => (state.votes= value),
 
+    ENABLE_NAVIGATION: state => (state.disableNavigation = false),
+    DISABLE_NAVIGATION: state => (state.disableNavigation = true),
+
     SET_CURRENT_LIST: (state, index) => (state.currentList = index),
     SET_CURRENT_GROUP: (state, index) => (state.currentGroup = index),
     SET_GROUP_LIST_COUNTS: (state, value) => (state.groupListCounts = value),
 
     SET_DID_WRAP_TO_TOP: (state, value) => (state.wrappedToTop = value),
-    SET_DID_WRAP_TO_BOTTOM: (state, value) => (state.wrappedToBottom = value)
+    SET_DID_WRAP_TO_BOTTOM: (state, value) => (state.wrappedToBottom = value),
+
+    UPDATE_LIST: (state, payload) => {
+      const listIndex = state.lists.findIndex(list => list.id === payload.id);
+
+      if (!listIndex) return console.error("Could not find index of list with id " + payload.id);
+
+      Object.keys(payload.data).forEach(key => {
+        state.lists[listIndex][key] = payload.data[key];
+      });
+    }
   },
 
   actions: {
     navigateLeft({ commit, state }) {
-      if (state.isNavigating) return;
+      if (state.isNavigating || state.disableNavigation) return;
       commit("SET_NAVIGATING", true);
 
       if (state.currentList - 1 < 0) commit("SET_CURRENT_LIST", state.groupListCounts[state.currentGroup] - 1);
