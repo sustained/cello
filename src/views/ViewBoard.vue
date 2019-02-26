@@ -9,16 +9,16 @@
         :class="gridClassList"
         :style="gridStyleList"
         v-for="(group, groupIndex) in groups"
-        :key="'group-' + group.id"
+        :key="group.id"
       >
         <list
           v-for="(list, listIndex) in listsForGroup(group.id)"
-          :key="'list-' + list.id"
+          :key="list.id"
           :row="groupIndex"
           :selected="isSelected(listIndex, group.id)"
           :list="list"
         >
-          <card v-for="card in cardsForList(list.id)" :key="'card-' + card.id" :card="card"></card>
+          <card v-for="card in cardsForList(list.id)" :key="card.id" :card="card"></card>
         </list>
       </div>
     </template>
