@@ -107,7 +107,7 @@ export default {
           break;
 
         case 87:
-          this.$store.dispatch("navigateDown");
+          this.$store.dispatch("navigateUp");
           break;
 
         case 83:
