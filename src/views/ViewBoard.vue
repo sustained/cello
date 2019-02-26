@@ -2,26 +2,27 @@
   <div id="board">
     <router-view></router-view>
 
-    <div class="grid" v-for="(group, groupIndex) in groups" :key="groupIndex">
+    <div class="grid" v-for="(group) in groups" :key="'group-' + group.id">
       <list
-        v-for="(list, listIndex) in group.lists"
-        :key="list.id"
-        :selected="isSelected(listIndex, groupIndex)"
-        :ref="`lists-${groupIndex}`"
+        v-for="(list, listIndex) in listsForGroup(group.id)"
+        :key="'list-' + list.id"
+        :selected="isSelected(listIndex, group.id)"
+        :list="list"
       >
+        {{ list.id }}, {{ group.id}}
         <!-- TODO: ^ Get rid of refs. -->
         <!-- NOTE: ^ group.lists was before "the changes" - cardsForList (vuex) -->
-        <card v-for="card in list.cards" :key="card.id" :card="card"></card>
+        <card v-for="card in cardsForList(list.id)" :key="'card-' + card.id" :card="card"></card>
       </list>
     </div>
   </div>
 </template>
 
 <script>
-import Vue from "vue";
+// import Vue from "vue";
 import { mapState, mapGetters } from "vuex";
 
-import throttle from "lodash.throttle";
+// import throttle from "lodash.throttle";
 
 import List from "@/components/List.vue";
 import Card from "@/components/Card.vue";
@@ -30,25 +31,25 @@ export default {
   components: { List, Card },
 
   data() {
-    return {
-      currentGroup: 0,
-      currentList: 0,
-
-      groups: [],
-
-      navigating: false
-    };
+    return {};
   },
 
   beforeDestroy() {
-    console.info("cleaning up event listeners");
+    // console.info("cleaning up event listeners");
     document.removeEventListener("keydown", this.handleKeyDown);
     document.removeEventListener("mousewheel", this.handleMouseWheel);
   },
 
   async mounted() {
-    window.scrollTo(0, 0);
+    // HACK: Not really sure what else to do, we need to reset the scroll position since at least Chrome
+    // remembers the previous scroll position which looks kind of odd if you refresh the page.
+    if (document.readyState === "loading")
+      document.addEventListener("DOMContentLoaded", () => {
+        setTimeout(() => window.scrollTo(0, 0), 100);
+      });
+    else window.scrollTo(0, 0);
 
+    /*
     const randBetween = (minimum, maximum) =>
       Math.max(minimum, Math.floor(Math.random() * maximum));
 
@@ -82,9 +83,10 @@ export default {
         group.lists.push(list);
       }
 
-      console.log("setting group", group);
+      // console.log("setting group", group);
       Vue.set(this.groups, i, group);
     }
+    */
 
     console.info("registering event listeners");
     document.addEventListener("keydown", this.handleKeyDown);
@@ -97,8 +99,15 @@ export default {
   },
 
   computed: {
-    ...mapState(["board"]),
-    ...mapGetters(["cardsForList"]),
+    ...mapState([
+      "board",
+      "lists",
+      "cards",
+      "groups",
+      "currentList",
+      "currentGroup"
+    ]),
+    ...mapGetters(["cardsForList", "listsForGroup"]),
 
     // overflows() {
     //   return document.body.scrollWidth > document.body.clientWidth;
@@ -112,132 +121,39 @@ export default {
   },
 
   methods: {
-    isSelected(listId, groupIndex) {
+    isSelected(listIndex, groupId) {
       // NOTE: DB indexes start at 1 but we switched to using local state for the new navigation prototype thing.
-      return listId === this.currentList && groupIndex === this.currentGroup;
+      return (
+        listIndex === this.currentList && groupId - 1 === this.currentGroup
+      );
     },
 
     /*
-      TODO: Move all navigation-related stuff to Vuex.
+      TODO: Move all navigation-related stuff to Vuex / remove refs.
+
+      https://github.com/sustained/cello/issues/9
 
       We can store a mapping of groupId => listCount (needed for when we navigate up/down).
     */
 
     scrollLeft() {
-      if (--this.currentList < 0)
-        this.currentList = this.$refs["lists-" + this.currentGroup].length - 1;
-
-      this.scrollToCurrentList();
+      this.$store.dispatch("navigateLeft");
     },
 
     scrollRight() {
-      if (
-        ++this.currentList >
-        this.$refs["lists-" + this.currentGroup].length - 1
-      )
-        this.currentList = 0;
-
-      this.scrollToCurrentList();
+      this.$store.dispatch("navigateRight");
     },
 
     scrollDown() {
-      let didWrap = false;
-
-      // Bottom wraps back around to top.
-      if (++this.currentGroup > this.groups.length - 1) {
-        didWrap = true;
-        this.currentGroup = 0;
-      }
-
-      // Select final list if we were scrolled further right in the previous group.
-      if (
-        this.currentList >
-        this.$refs["lists-" + this.currentGroup].length - 1
-      )
-        this.currentList = this.$refs["lists-" + this.currentGroup].length - 1;
-
-      this.scrollToCurrentList(didWrap, false);
+      this.$store.dispatch("navigateDown");
     },
 
     scrollUp() {
-      let didWrap = false;
-
-      // Top wraps back around to top.
-      if (--this.currentGroup < 0) {
-        didWrap = true;
-        this.currentGroup = this.groups.length - 1;
-      }
-
-      // Select final list if we were scrolled further right in the previous group.
-      if (
-        this.currentList >
-        this.$refs["lists-" + this.currentGroup].length - 1
-      )
-        this.currentList = this.$refs["lists-" + this.currentGroup].length - 1;
-
-      this.scrollToCurrentList(didWrap, false);
-    },
-
-    /* IDEA: We could intelligently handle the disableSmoothBehaviour thing.
-      
-      The scrolling with the smooth behaviour enabled with large numbers of groups 
-      is extremely jarring (and may well be (one of) the cause(s) of the frame rate 
-      drops from the performance test (mostly 60 FPS but the odd dip to ~10).
-
-      We can probably make it so that if there are too many groups, then it will just 
-      intelligently set behaviour to "auto".
-    */
-    scrollToCurrentList(disableSmoothBehaviour, disableObserver = true) {
-      const lists = this.$refs["lists-" + this.currentGroup];
-
-      if (!lists) return console.warn("no refs for group " + this.currentGroup);
-
-      const component = lists[this.currentList];
-
-      if (!component || !component.$el)
-        return console.warn(
-          "no component/el for group " + this.currentGroup,
-          component,
-          component.$el
-        );
-
-      const element = component.$el;
-
-      if (!disableObserver) this.createObserver(element);
-
-      console.log("scrolling to element");
-      element.scrollIntoView({
-        behavior: disableSmoothBehaviour ? "auto" : "smooth", // TODO: Let user choose auto/smooth.
-        inline: "center"
-      });
-    },
-
-    createObserver(element) {
-      this.navigating = true;
-
-      console.log("creating observer");
-      let observer = new IntersectionObserver(
-        entry => {
-          let ratio = entry[0].intersectionRatio;
-
-          // HACK: Workaround potential Chrome bug (or IntersectionObserver quirk).
-          if (ratio >= 1.0) {
-            observer.unobserve(element);
-            this.navigating = false;
-          }
-        },
-        {
-          root: document.getElementById("div#board"),
-          threshold: [1.0]
-        }
-      );
-
-      console.log("observing element", element);
-      observer.observe(element);
+      this.$store.dispatch("navigateUp");
     },
 
     handleKeyDown(event) {
-      if (this.navigating) return;
+      // if (this.navigating) return;
 
       switch (event.keyCode) {
         case 65:
@@ -256,10 +172,9 @@ export default {
           this.scrollDown();
           break;
       }
-    },
-
+    }
+    /*
     handleMouseWheel(event) {
-      /*
       return throttle(() => {
         event.preventDefault();
 
@@ -278,8 +193,8 @@ export default {
 
         this.scrollToCurrentList();
       }, 50);
-      */
     }
+    */
   }
 };
 </script>

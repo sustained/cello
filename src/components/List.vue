@@ -1,7 +1,7 @@
 <template>
-  <div ref="el" :class="['list', {selected}]">
+  <div ref="list" :class="['list', {selected}]">
     <div class="list-wrapper">
-      <p>List!</p>
+      <p>{{ list.title }}</p>
 
       <slot>
         <p style="margin: 20px 10px;">No cards!</p>
@@ -16,7 +16,74 @@
 
 <script>
 export default {
-  props: ["selected"]
+  props: ["list", "selected"],
+
+  data() {
+    return {
+      refsSet: false
+    };
+  },
+
+  watch: {
+    selected(selected) {
+      this.selected = selected;
+
+      if (selected) this.bringIntoView(false, false);
+    }
+  },
+
+  mounted() {},
+
+  methods: {
+    /* IDEA: We could intelligently handle the disableSmoothBehaviour thing.
+      
+      The scrolling with the smooth behaviour enabled with large numbers of groups 
+      is extremely jarring (and may well be (one of) the cause(s) of the frame rate 
+      drops from the performance test (mostly 60 FPS but the odd dip to ~10).
+
+      We can probably make it so that if there are too many groups, then it will just 
+      intelligently set behaviour to "auto".
+    */
+    bringIntoView(disableSmoothBehaviour, disableObserver = false) {
+      const list = this.$refs["list"];
+
+      if (!list) return console.warn("no ref for list " + this.list.id);
+
+      if (!disableObserver) this.createObserver(list);
+
+      // console.log("scrolling to element");
+      list.scrollIntoView({
+        behavior: disableSmoothBehaviour ? "auto" : "smooth", // TODO: Let user choose auto/smooth.
+        inline: "center"
+      });
+
+      // setTimeout(() => {
+      //   this.$store.commit("SET_NAVIGATING", false);
+      // }, 1000);
+    },
+
+    createObserver(element) {
+      // console.log("creating observer");
+      let observer = new IntersectionObserver(
+        entry => {
+          let ratio = entry[0].intersectionRatio;
+
+          // HACK: Workaround potential Chrome bug (or IntersectionObserver quirk).
+          if (ratio >= 1.0) {
+            observer.unobserve(element);
+            this.$store.commit("SET_NAVIGATING", false);
+          }
+        },
+        {
+          root: document.getElementById("div#board"),
+          threshold: [1.0]
+        }
+      );
+
+      // console.log("observing element", element);
+      observer.observe(element);
+    }
+  }
 };
 </script>
 
