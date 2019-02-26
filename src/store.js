@@ -7,6 +7,30 @@ import cello from "@/services/CelloService";
 
 export default new Vuex.Store({
   state: {
+    options: {
+      // Passed along to scrollIntoView, one of smooth | auto.
+      scrollBehaviour: "smooth",
+
+      // Override ABOVE behaviour when wrapping (vertical, horizontal), only used if scrollBehaviour is scroll.
+      wrappingBehaviour: ["auto", "auto"],
+
+      // Display a thin bar, consisting of the label colour, on the sides of cards.
+      primaryLabelBars: true,
+
+      // One of:
+      //   * "none"    - show nothing at all
+      //   * "icon"    - show a little icon when there's a description
+      //   * "snip:10" - show an excerpt of the description (specifying a length optional, defaults to 24 words)
+      //   * "full"    - show the full description
+      descriptionDisplay: "icon",
+
+      // Enable to show label names in labels + make them larger.
+      labelsExpanded: true,
+
+      // Toggle the ABOVE, when labels are clicked.
+      expandLabelsOnClick: true
+    },
+
     // The indexes for the currently selected list and group.
     currentList: 0,
     currentGroup: 0,
@@ -16,9 +40,6 @@ export default new Vuex.Store({
 
     // Blocks navigation when navigation is in progress.
     isNavigating: false,
-
-    // Passed along to scrollIntoView.
-    scrollBehaviour: "smooth", // smooth | auto
 
     // True for the duration of top-to-bottom or vice versa navigation.
     wrappedToTop: false,
