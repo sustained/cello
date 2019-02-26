@@ -140,6 +140,7 @@ export default new Vuex.Store({
         commit("SET_NAVIGATING", true);
         commit("SET_CURRENT_GROUP", state.groups.length - 1);
       } else {
+        commit("SET_NAVIGATING", true);
         commit("SET_CURRENT_GROUP", state.currentGroup - 1);
       }
 
