@@ -124,7 +124,7 @@ export default new Vuex.Store({
     },
 
     navigateRight({ commit, state }) {
-      if (state.isNavigating) return;
+      if (state.isNavigating || state.disableNavigation) return;
       commit("SET_NAVIGATING", true);
 
       if (state.currentList + 1 > state.groupListCounts[state.currentGroup] - 1) commit("SET_CURRENT_LIST", 0);
@@ -132,7 +132,7 @@ export default new Vuex.Store({
     },
 
     async navigateUp({ commit, dispatch, state }) {
-      if (state.isNavigating) return;
+      if (state.isNavigating || state.disableNavigation) return;
 
       // Top wraps back around to bottom.
       if (state.currentGroup - 1 < 0) {
@@ -147,7 +147,7 @@ export default new Vuex.Store({
     },
 
     async navigateDown({ commit, dispatch, state }) {
-      if (state.isNavigating) return;
+      if (state.isNavigating || state.disableNavigation) return;
 
       // Bottom wraps back around to top.
       if (state.currentGroup + 1 > state.groups.length - 1) {
