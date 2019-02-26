@@ -1,12 +1,20 @@
 <template>
-  <div id="board" :class="classList">
+  <div id="board" :class="classList" :style="styleList">
     <router-view></router-view>
 
     <template v-if="loadingState === 'loaded'">
-      <div class="grid" v-for="(group) in groups" :key="'group-' + group.id">
+      <board-introduction/>
+
+      <div
+        :class="gridClassList"
+        :style="gridStyleList"
+        v-for="(group, groupIndex) in groups"
+        :key="'group-' + group.id"
+      >
         <list
           v-for="(list, listIndex) in listsForGroup(group.id)"
           :key="'list-' + list.id"
+          :row="groupIndex"
           :selected="isSelected(listIndex, group.id)"
           :list="list"
         >
@@ -32,9 +40,10 @@ import { mapState, mapGetters } from "vuex";
 
 import List from "@/components/List.vue";
 import Card from "@/components/Card.vue";
+import BoardIntroduction from "@/views/BoardIntroduction.vue";
 
 export default {
-  components: { List, Card },
+  components: { List, Card, BoardIntroduction },
 
   data() {
     return {};
@@ -74,16 +83,33 @@ export default {
       "currentList",
       "currentGroup",
       "loadingState",
-      "errorMessage"
+      "errorMessage",
+      "options"
     ]),
 
-    ...mapGetters(["cardsForList", "listsForGroup"]),
+    ...mapGetters(["cardsForList", "listsForGroup", "isLastGroupActive", ""]),
 
     classList() {
       return {
         loaded: this.loadingState === "loaded",
         loading: this.loadingState === "loading",
         errored: this.loadingState === "errored"
+      };
+    },
+
+    styleList() {
+      return {
+        height: this.options.gridHeight + "vh"
+      };
+    },
+
+    gridClassList() {
+      return ["grid"];
+    },
+
+    gridStyleList() {
+      return {
+        height: this.options.gridHeight + "vh"
       };
     }
   },
@@ -120,8 +146,7 @@ export default {
 </script>
 
 <style>
-div#board,
-div.grid {
+div#board {
   height: 100vh;
 }
 
@@ -138,5 +163,8 @@ div.grid {
   display: flex;
   flex-direction: row;
   padding: 0.5em;
+}
+div.grid + div.grid {
+  padding-top: 0;
 }
 </style>
