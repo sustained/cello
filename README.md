@@ -1,4 +1,4 @@
-# laravel-forum
+# Cello
 
 - [Project Setup](#project-setup)
 - [Project Information](#project-information)
@@ -51,7 +51,7 @@ So, why not?
 
 ### How will this be different?
 
-See the [Trello board(https://trello.com/b/yj3Lb4Gu/project-cello) (ironic, I know) if you're curious about my ideas.
+See the [Trello board](https://trello.com/b/yj3Lb4Gu/project-cello) (ironic, I know) if you're curious about my ideas.
 
 ### When will it be done?
 
@@ -63,7 +63,7 @@ It isn't, yet. But if there's demand, maybe I'll do that.
 
 ### Who are you?
 
-- I spend arguably far too much time on Discord (sustained#2329).
+- I spend arguably far too much time on [Discord](https://www.discordapp.com/) (sustained#2329).
 - I have a [website](https://www.sustained.name/) but it doesn't do much yet.
 - I don't really _get_ [Twitter](https://twitter.com/@susDissonance) but it exists.
 - [Medium](https://medium.com/@sustained) is a thing, also.
