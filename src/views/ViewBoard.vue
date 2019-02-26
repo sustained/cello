@@ -86,7 +86,7 @@ export default {
       "options"
     ]),
 
-    ...mapGetters(["cardsForList", "listsForGroup", "isLastGroupActive", ""]),
+    ...mapGetters(["cardsForList", "listsForGroup", "isLastGroupActive"]),
 
     classList() {
       return {
