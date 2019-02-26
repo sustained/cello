@@ -9,7 +9,6 @@
         :selected="isSelected(listIndex, group.id)"
         :list="list"
       >
-        {{ list.id }}, {{ group.id}}
         <!-- TODO: ^ Get rid of refs. -->
         <!-- NOTE: ^ group.lists was before "the changes" - cardsForList (vuex) -->
         <card v-for="card in cardsForList(list.id)" :key="'card-' + card.id" :card="card"></card>
